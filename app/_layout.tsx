@@ -1,24 +1,41 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import "@/src/api";
+import { AuthProvider } from "@/src/contexts/AuthContext";
+import { BottomSheetProvider } from "@/src/contexts/BottomSheetContext";
+import { ThemeProvider } from "@/src/contexts/ThemeContext";
+import { GlobalStyles } from "@/src/theme/common";
+import { useFonts } from "expo-font";
+import { Slot } from "expo-router";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { KeyboardProvider } from "react-native-keyboard-controller";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
+const RootLayout = () => {
+  const [isLoaded] = useFonts({
+    "Montserrat-Light": require("../assets/fonts/Montserrat-Light.ttf"),
+    "Montserrat-Regular": require("../assets/fonts/Montserrat-Regular.ttf"),
+    "Montserrat-Medium": require("../assets/fonts/Montserrat-Medium.ttf"),
+    "Montserrat-SemiBold": require("../assets/fonts/Montserrat-SemiBold.ttf"),
+    "Montserrat-Bold": require("../assets/fonts/Montserrat-Bold.ttf"),
+    "Montserrat-ExtraBold": require("../assets/fonts/Montserrat-ExtraBold.ttf"),
+  });
 
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
-
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  if (!isLoaded) return null;
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
+    <ThemeProvider>
+      <GestureHandlerRootView style={GlobalStyles.flex}>
+        <KeyboardProvider>
+          <SafeAreaProvider>
+            <AuthProvider>
+              <BottomSheetProvider>
+                <Slot />
+              </BottomSheetProvider>
+            </AuthProvider>
+          </SafeAreaProvider>
+        </KeyboardProvider>
+      </GestureHandlerRootView>
     </ThemeProvider>
   );
-}
+};
+
+export default RootLayout;
