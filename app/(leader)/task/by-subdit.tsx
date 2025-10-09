@@ -1,4 +1,5 @@
 import { Task } from "@/src/api";
+import { Header, Input } from "@/src/components";
 import { Gap, Text } from "@/src/components/ui";
 import {
   PRIORITY_OPTIONS,
@@ -11,36 +12,67 @@ import { GlobalStyles } from "@/src/theme/common";
 import { SHADOWS } from "@/src/theme/shadows";
 import { SPACING } from "@/src/theme/spacing";
 import { Ionicons } from "@expo/vector-icons";
-import { router, useFocusEffect } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import moment from "moment";
 import "moment/locale/id";
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const StaffDashboard = () => {
+const TaskBySubditScreen = () => {
   const { theme } = useTheme();
   const { top } = useSafeAreaInsets();
-  const { tasks, getTasks } = useTask();
+  const { tasks, getTasksBySubdit } = useTask();
+  const { subditId }: { subditId: string } = useLocalSearchParams();
+  const [searchQuery, setSearchQuery] = useState("");
 
   useFocusEffect(
     useCallback(() => {
-      getTasks();
-    }, [getTasks])
+      getTasksBySubdit(subditId);
+    }, [getTasksBySubdit, subditId])
   );
+
+  // Filter tasks based on search query
+  const filteredTasks = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return tasks;
+    }
+
+    const query = searchQuery.toLowerCase().trim();
+
+    return tasks.filter((task) => {
+      // Search by title
+      const matchTitle = task.title.toLowerCase().includes(query);
+
+      // Search by description
+      const matchDescription = task.description?.toLowerCase().includes(query);
+
+      // Search by status
+      const statusLabel = STATUS_CONFIG[task.status]?.label.toLowerCase();
+      const matchStatus = statusLabel?.includes(query);
+
+      // Search by priority
+      const priorityLabel = PRIORITY_OPTIONS.find(
+        (opt) => opt.value === task.priority
+      )?.label.toLowerCase();
+      const matchPriority = priorityLabel?.includes(query);
+
+      return matchTitle || matchDescription || matchStatus || matchPriority;
+    });
+  }, [tasks, searchQuery]);
 
   const getPriorityConfig = (priority: number) => {
     return PRIORITY_OPTIONS.find((opt) => opt.value === priority);
   };
 
   const handleTaskPress = (taskId: string) => {
-    router.push(`/(staff)/task/${taskId}`);
+    router.push(`/(leader)/task/${taskId}`);
   };
 
-  const handleLogout = useCallback(() => {
-    router.replace("/(auth)/login");
-  }, []);
+  const handleSearchChange = (text: string) => {
+    setSearchQuery(text);
+  };
 
   const renderTaskItem = useCallback(
     ({ item, index }: { item: Task; index: number }) => {
@@ -49,9 +81,9 @@ const StaffDashboard = () => {
 
       return (
         <TouchableOpacity
+          activeOpacity={0.8}
           style={[styles.card, { backgroundColor: theme.colors.surface }]}
           onPress={() => handleTaskPress(item.id)}
-          activeOpacity={0.7}
         >
           <Animated.View
             entering={FadeInDown.delay(index * 100)
@@ -73,16 +105,16 @@ const StaffDashboard = () => {
               <View
                 style={[
                   styles.statusBadge,
-                  { backgroundColor: statusConfig.color + "15" },
+                  { backgroundColor: statusConfig?.color + "15" },
                 ]}
               >
                 <Ionicons
-                  name={statusConfig.icon as any}
+                  name={statusConfig?.icon as any}
                   size={12}
-                  color={statusConfig.color}
+                  color={statusConfig?.color}
                 />
-                <Text type="medium" size="xs" color={statusConfig.color}>
-                  {statusConfig.label}
+                <Text type="medium" size="xs" color={statusConfig?.color}>
+                  {statusConfig?.label}
                 </Text>
               </View>
             </View>
@@ -116,7 +148,7 @@ const StaffDashboard = () => {
                   size="xs"
                   color={theme.colors.textSecondary}
                 >
-                  Progress {item.progress.completed} / {item.progress.total}
+                  Progress {item?.progress?.completed} / {item?.progress?.total}
                 </Text>
               </View>
               <View
@@ -131,7 +163,8 @@ const StaffDashboard = () => {
                     {
                       backgroundColor: statusConfig.color,
                       width: `${
-                        (item.progress.completed / item.progress.total) * 100
+                        (item?.progress?.completed / item?.progress?.total) *
+                        100
                       }%`,
                     },
                   ]}
@@ -179,16 +212,34 @@ const StaffDashboard = () => {
   );
 
   const renderEmptyState = useCallback(() => {
+    const isSearching = searchQuery.trim().length > 0;
+
     return (
       <View
-        style={[GlobalStyles.flex, GlobalStyles.center, { paddingTop: "70%" }]}
+        style={[GlobalStyles.flex, GlobalStyles.center, { paddingTop: "80%" }]}
       >
-        <Text type="medium" size="lg">
-          Tidak ada data
+        <Ionicons
+          name={isSearching ? "search-outline" : "document-text-outline"}
+          size={64}
+          color={theme.colors.textSecondary}
+          style={{ marginBottom: SPACING.md }}
+        />
+        <Text type="medium" size="lg" color={theme.colors.textSecondary}>
+          {isSearching
+            ? `Tidak ada hasil untuk "${searchQuery}"`
+            : "Tidak ada data"}
         </Text>
+        {isSearching && (
+          <>
+            <Gap vertical={8} />
+            <Text type="regular" size="sm" color={theme.colors.textSecondary}>
+              Coba kata kunci lain
+            </Text>
+          </>
+        )}
       </View>
     );
-  }, []);
+  }, [searchQuery, theme.colors]);
 
   return (
     <View
@@ -197,37 +248,26 @@ const StaffDashboard = () => {
         { paddingTop: top, backgroundColor: theme.colors.background },
       ]}
     >
-      <Animated.View
-        entering={FadeInDown.duration(600).springify()}
-        style={styles.header}
-      >
-        <View>
-          <Text type="bold" size="xxl">
-            Tugas Saya
-          </Text>
-          <Gap vertical={4} />
-          <Text type="regular" size="sm" color={theme.colors.textSecondary}>
-            {tasks.length} tugas aktif
-          </Text>
-        </View>
-        <TouchableOpacity
-          style={[
-            styles.logoutButton,
-            { backgroundColor: theme.colors.error + "15" },
-          ]}
-          onPress={handleLogout}
-          activeOpacity={0.7}
-        >
-          <Ionicons
-            name="log-out-outline"
-            size={20}
-            color={theme.colors.error}
-          />
-        </TouchableOpacity>
-      </Animated.View>
+      <Header title={`Tugas ${subditId}`} />
+
+      <View style={styles.spacing}>
+        <Input
+          placeholder="Cari judul, deskripsi, status, atau prioritas..."
+          value={searchQuery}
+          onChangeText={handleSearchChange}
+        />
+        {searchQuery.trim().length > 0 && (
+          <>
+            <Gap vertical={8} />
+            <Text type="medium" size="xs" color={theme.colors.textSecondary}>
+              Ditemukan {filteredTasks.length} tugas
+            </Text>
+          </>
+        )}
+      </View>
 
       <FlatList
-        data={tasks}
+        data={filteredTasks}
         renderItem={renderTaskItem}
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.content}
@@ -239,22 +279,15 @@ const StaffDashboard = () => {
   );
 };
 
-export default StaffDashboard;
+export default TaskBySubditScreen;
 
 const styles = StyleSheet.create({
-  header: {
-    padding: SPACING.lg,
-    ...GlobalStyles.rowBetween,
-  },
-  logoutButton: {
-    width: 48,
-    height: 48,
-    borderRadius: BORDER_RADIUS.full,
-    ...GlobalStyles.center,
-  },
   content: {
-    margin: SPACING.md,
+    marginHorizontal: SPACING.md,
     paddingBottom: SPACING.xxl + SPACING.xxl + SPACING.xxl,
+  },
+  spacing: {
+    padding: SPACING.md,
   },
   card: {
     padding: SPACING.md,

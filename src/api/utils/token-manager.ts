@@ -4,6 +4,7 @@ import { AuthTokens } from "../types";
 export class SecureTokenManager {
   private static readonly ACCESS_TOKEN_KEY = "accessToken";
   private static readonly REFRESH_TOKEN_KEY = "refreshToken";
+  private static readonly FCM_TOKEN_KEY = "fcmToken";
 
   static getToken(): string | null {
     return secureTokensMMKV.getString(this.ACCESS_TOKEN_KEY) ?? null;
@@ -19,6 +20,14 @@ export class SecureTokenManager {
 
   static setRefreshToken(token: string): void {
     secureTokensMMKV.set(this.REFRESH_TOKEN_KEY, token);
+  }
+
+  static getFcmToken(): string | null {
+    return secureTokensMMKV.getString(this.FCM_TOKEN_KEY) ?? null;
+  }
+
+  static setFcmToken(token: string): void {
+    secureTokensMMKV.set(this.FCM_TOKEN_KEY, token);
   }
 
   static setTokens(tokens: AuthTokens): void {

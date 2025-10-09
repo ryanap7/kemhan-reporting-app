@@ -20,6 +20,11 @@ export interface StuckTasks {
   thisMonth: number;
 }
 
+export interface PendingDispositionTasks {
+  count: number;
+  thisMonth: number;
+}
+
 export interface SubditStatistics {
   name: string;
   subdit: string;
@@ -35,6 +40,7 @@ export interface StatisticsData {
   completedTasks: CompletedTasks;
   inProgressTasks: InProgressTasks;
   stuckTasks: StuckTasks;
+  pendingDispositionTasks: PendingDispositionTasks;
   bySubdit: SubditStatistics[];
 }
 

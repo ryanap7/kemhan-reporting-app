@@ -29,6 +29,12 @@ export const STATUS_CONFIG = {
     icon: "time-outline" as const,
     bgColor: "#F9FAFB",
   },
+  DISPOSITIONED: {
+    label: "Tugas Baru",
+    color: "#3B82F6",
+    icon: "arrow-redo-outline" as const,
+    bgColor: "#EFF6FF",
+  },
   DRAFT: {
     label: "Draft",
     color: "#8B5CF6",

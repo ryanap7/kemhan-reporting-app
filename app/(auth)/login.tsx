@@ -55,16 +55,16 @@ export default function LoginScreen() {
   }, [login, validation.isValid]);
 
   return (
-    <KeyboardAvoiding>
-      <ScrollView
-        style={{
-          paddingTop: top,
-          backgroundColor: theme.colors.background,
-        }}
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-      >
+    <ScrollView
+      style={{
+        paddingTop: top + SPACING.xxl,
+        backgroundColor: theme.colors.background,
+      }}
+      contentContainerStyle={styles.scrollContent}
+      keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}
+    >
+      <KeyboardAvoiding>
         {/* Header */}
         <View style={styles.header}>
           <Image source={Logo} style={styles.logo} contentFit="cover" />
@@ -108,7 +108,6 @@ export default function LoginScreen() {
                 updateAuthState({ username: value });
                 setTouched((prev) => ({ ...prev, username: true }));
               }}
-              onBlur={() => setTouched((prev) => ({ ...prev, username: true }))}
               autoCapitalize="none"
               autoCorrect={false}
               editable={!isLoading}
@@ -134,8 +133,8 @@ export default function LoginScreen() {
                 updateAuthState({ password: value });
                 setTouched((prev) => ({ ...prev, password: true }));
               }}
-              onBlur={() => setTouched((prev) => ({ ...prev, password: true }))}
               secureTextEntry
+              autoCapitalize="none"
               editable={!isLoading}
               error={touched.password ? validation.errors.password : undefined}
             />
@@ -151,16 +150,15 @@ export default function LoginScreen() {
             onPress={handleLogin}
           />
         </View>
-      </ScrollView>
-    </KeyboardAvoiding>
+      </KeyboardAvoiding>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   scrollContent: {
-    flexGrow: 1,
-    justifyContent: "center",
     paddingHorizontal: SPACING.lg,
+    paddingBottom: 400,
   },
   header: {
     ...GlobalStyles.center,

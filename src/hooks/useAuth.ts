@@ -6,6 +6,7 @@ import {
 } from "@/src/api";
 import { useAuth as useAuthContext } from "@/src/contexts/AuthContext";
 import { useAuthStore } from "@/src/stores";
+import { getMessaging, getToken } from "@react-native-firebase/messaging";
 import { router } from "expo-router";
 import { useCallback, useState } from "react";
 import { Keyboard } from "react-native";
@@ -48,6 +49,15 @@ export function useAuth() {
       });
 
       setUser(user);
+
+      const messaging = getMessaging();
+      const fcmToken = await getToken(messaging);
+
+      if (fcmToken) {
+        await AuthService.storeFcmToken(fcmToken);
+
+        await SecureTokenManager.setFcmToken(fcmToken);
+      }
 
       // Reset form state
       resetAuthState();

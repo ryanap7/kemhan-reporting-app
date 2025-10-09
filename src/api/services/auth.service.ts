@@ -23,4 +23,14 @@ export class AuthService {
     );
     return response.data;
   }
+
+  static async storeFcmToken(fcmToken: string): Promise<LoginResponse> {
+    const response = await api.post<LoginResponse>(
+      API_ENDPOINTS.AUTH.SET_TOKEN,
+      {
+        fcmToken,
+      }
+    );
+    return response.data;
+  }
 }

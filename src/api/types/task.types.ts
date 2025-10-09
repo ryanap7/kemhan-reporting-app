@@ -7,6 +7,11 @@ export interface CreateTaskPayload {
   dueDate: string;
 }
 
+export interface DispositionTaskPayload {
+  assignedToRole: string;
+  dispositionNote: string;
+}
+
 export type CreateTaskResponse = ApiResponse<null>;
 
 export interface TaskCreator {

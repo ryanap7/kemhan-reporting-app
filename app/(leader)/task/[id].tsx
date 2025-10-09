@@ -1,4 +1,3 @@
-import { ChecklistItem } from "@/src/api";
 import { Header } from "@/src/components";
 import { Gap, Text } from "@/src/components/ui";
 import {
@@ -15,15 +14,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import moment from "moment";
 import "moment/locale/id";
-import React, { useCallback, useState } from "react";
-import {
-  Modal,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import React, { useCallback } from "react";
+import { ScrollView, StyleSheet, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -37,56 +29,13 @@ const DetailTaskScreen = () => {
   const { theme } = useTheme();
   const { top } = useSafeAreaInsets();
 
-  const { task, getTaskById, updateProgress, isLoading } = useTask();
+  const { task, getTaskById, isLoading } = useTask();
 
   useFocusEffect(
     useCallback(() => {
       getTaskById(id);
     }, [getTaskById, id])
   );
-
-  const [showBlockModal, setShowBlockModal] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<ChecklistItem | null>(null);
-  const [blockNote, setBlockNote] = useState("");
-
-  const handleChecklistAction = useCallback(
-    async (item: ChecklistItem, action: "complete" | "start" | "block") => {
-      if (action === "complete") {
-        const payload = {
-          status: "COMPLETED",
-        };
-        if (task?.id) {
-          await updateProgress(task.id, item.id, payload);
-        }
-      } else if (action === "start") {
-        const payload = {
-          status: "IN_PROGRESS",
-        };
-        if (task?.id) {
-          await updateProgress(task.id, item.id, payload);
-        }
-      } else if (action === "block") {
-        setSelectedItem(item);
-        setShowBlockModal(true);
-      }
-    },
-    [task, updateProgress]
-  );
-
-  const handleBlockSubmit = useCallback(async () => {
-    if (!blockNote.trim() || !selectedItem) return;
-
-    setShowBlockModal(false);
-    setBlockNote("");
-    setSelectedItem(null);
-
-    const payload = {
-      status: "BLOCKED",
-    };
-    if (task?.id && selectedItem?.id) {
-      await updateProgress(task.id, selectedItem.id, payload);
-    }
-  }, [blockNote, selectedItem, task?.id, updateProgress]);
 
   if (isLoading || !task) {
     return (
@@ -115,13 +64,6 @@ const DetailTaskScreen = () => {
   const statusConfig = STATUS_CONFIG[task?.status];
   const priorityConfig = getPriorityConfig(task?.priority);
 
-  // Find the first non-completed task (can start)
-  const getNextActionableTask = () => {
-    return task?.checklistItems.find((item) => item.status !== "COMPLETED");
-  };
-
-  const nextActionableTask = getNextActionableTask();
-
   return (
     <View
       style={[
@@ -138,6 +80,7 @@ const DetailTaskScreen = () => {
         showsVerticalScrollIndicator={false}
       >
         {/* Task Header Card */}
+
         <Animated.View
           entering={FadeInDown.delay(100).duration(500).springify()}
           style={[styles.card, { backgroundColor: theme.colors.surface }]}
@@ -269,12 +212,6 @@ const DetailTaskScreen = () => {
           const statusConfig = STATUS_CONFIG[item.status];
           const isCompleted = item.status === "COMPLETED";
           const isBlocked = item.status === "BLOCKED";
-          const isInProgress = item.status === "IN_PROGRESS";
-          const isNotStarted = item.status === "NOT_STARTED";
-
-          // Only show start button for the next actionable task
-          const canStart = isNotStarted && item.id === nextActionableTask?.id;
-          const canContinue = isBlocked && item.id === nextActionableTask?.id;
 
           return (
             <View key={item.id}>
@@ -410,115 +347,6 @@ const DetailTaskScreen = () => {
                     </View>
                   </>
                 )}
-
-                {/* Action Buttons */}
-                {!isCompleted && (canStart || canContinue || isInProgress) && (
-                  <>
-                    <Gap vertical={12} />
-                    <View style={styles.actionButtons}>
-                      {canStart && (
-                        <TouchableOpacity
-                          style={[
-                            styles.actionButton,
-                            { backgroundColor: theme.colors.primary },
-                          ]}
-                          onPress={() => handleChecklistAction(item, "start")}
-                          activeOpacity={0.7}
-                        >
-                          <Ionicons
-                            name="play"
-                            size={16}
-                            color={theme.colors.textInverse}
-                          />
-                          <Text
-                            type="bold"
-                            size="sm"
-                            color={theme.colors.textInverse}
-                          >
-                            Mulai Tahapan
-                          </Text>
-                        </TouchableOpacity>
-                      )}
-
-                      {isInProgress && (
-                        <>
-                          <TouchableOpacity
-                            style={[
-                              styles.actionButton,
-                              { backgroundColor: theme.colors.success },
-                            ]}
-                            onPress={() =>
-                              handleChecklistAction(item, "complete")
-                            }
-                            activeOpacity={0.7}
-                          >
-                            <Ionicons
-                              name="checkmark"
-                              size={16}
-                              color={theme.colors.textInverse}
-                            />
-                            <Text
-                              type="bold"
-                              size="sm"
-                              color={theme.colors.textInverse}
-                            >
-                              Selesaikan
-                            </Text>
-                          </TouchableOpacity>
-                          <TouchableOpacity
-                            style={[
-                              styles.actionButtonOutline,
-                              {
-                                backgroundColor: theme.colors.surface,
-                                borderColor: theme.colors.error,
-                              },
-                            ]}
-                            onPress={() => handleChecklistAction(item, "block")}
-                            activeOpacity={0.7}
-                          >
-                            <Ionicons
-                              name="alert-circle-outline"
-                              size={16}
-                              color={theme.colors.error}
-                            />
-                            <Text
-                              type="bold"
-                              size="sm"
-                              color={theme.colors.error}
-                            >
-                              Hambatan
-                            </Text>
-                          </TouchableOpacity>
-                        </>
-                      )}
-
-                      {canContinue && (
-                        <TouchableOpacity
-                          style={[
-                            styles.actionButton,
-                            { backgroundColor: theme.colors.primary },
-                            SHADOWS.sm,
-                          ]}
-                          onPress={() => handleChecklistAction(item, "start")}
-                          activeOpacity={0.7}
-                        >
-                          <Ionicons
-                            name="play"
-                            size={16}
-                            color={theme.colors.textInverse}
-                          />
-                          <Text
-                            type="bold"
-                            size="sm"
-                            color={theme.colors.textInverse}
-                          >
-                            Lanjutkan
-                          </Text>
-                        </TouchableOpacity>
-                      )}
-                    </View>
-                  </>
-                )}
               </Animated.View>
 
               {/* Connector */}
@@ -541,105 +369,6 @@ const DetailTaskScreen = () => {
 
         <Gap vertical={32} />
       </ScrollView>
-
-      {/* Block Modal */}
-      <Modal
-        visible={showBlockModal}
-        transparent
-        animationType="fade"
-        onRequestClose={() => {
-          setShowBlockModal(false);
-          setBlockNote("");
-          setSelectedItem(null);
-        }}
-      >
-        <View style={styles.modalOverlay}>
-          <View
-            style={[
-              styles.modalContent,
-              { backgroundColor: theme.colors.surface },
-            ]}
-          >
-            <View style={styles.modalHeader}>
-              <Text type="bold" size="lg">
-                Catat Hambatan
-              </Text>
-              <TouchableOpacity
-                onPress={() => {
-                  setShowBlockModal(false);
-                  setBlockNote("");
-                  setSelectedItem(null);
-                }}
-              >
-                <Ionicons name="close" size={24} color={theme.colors.text} />
-              </TouchableOpacity>
-            </View>
-
-            <Gap vertical={12} />
-
-            <Text type="regular" size="sm" color={theme.colors.textSecondary}>
-              Jelaskan hambatan yang dialami pada tahapan ini
-            </Text>
-
-            <Gap vertical={12} />
-
-            <TextInput
-              style={[
-                styles.textarea,
-                {
-                  backgroundColor: theme.colors.background,
-                  borderColor: theme.colors.border,
-                  color: theme.colors.text,
-                },
-              ]}
-              placeholder="Contoh: Menunggu approval dari bagian keuangan"
-              placeholderTextColor={theme.colors.textSecondary}
-              value={blockNote}
-              onChangeText={setBlockNote}
-              multiline
-              numberOfLines={4}
-              textAlignVertical="top"
-            />
-
-            <Gap vertical={20} />
-
-            <View style={styles.modalActions}>
-              <TouchableOpacity
-                style={[
-                  styles.modalButton,
-                  { backgroundColor: theme.colors.border },
-                ]}
-                onPress={() => {
-                  setShowBlockModal(false);
-                  setBlockNote("");
-                  setSelectedItem(null);
-                }}
-                activeOpacity={0.7}
-              >
-                <Text type="bold" size="sm" color={theme.colors.text}>
-                  Batal
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.modalButton,
-                  {
-                    backgroundColor: theme.colors.error,
-                    opacity: !blockNote.trim() ? 0.5 : 1,
-                  },
-                ]}
-                onPress={handleBlockSubmit}
-                disabled={!blockNote.trim()}
-                activeOpacity={0.7}
-              >
-                <Text type="bold" size="sm" color={theme.colors.textInverse}>
-                  Simpan
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 };
@@ -733,7 +462,6 @@ const styles = StyleSheet.create({
   actionButtons: {
     gap: SPACING.sm,
     ...GlobalStyles.rowCenter,
-    ...SHADOWS.sm,
   },
   actionButton: {
     flex: 1,
@@ -742,7 +470,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.md,
     borderRadius: BORDER_RADIUS.md,
     ...GlobalStyles.rowCenter,
-    ...SHADOWS.sm,
   },
   actionButtonOutline: {
     flex: 1,
@@ -752,7 +479,6 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.md,
     borderWidth: 1,
     ...GlobalStyles.rowCenter,
-    ...SHADOWS.sm,
   },
   connector: {
     ...GlobalStyles.center,
@@ -761,7 +487,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
     ...GlobalStyles.center,
-    ...SHADOWS.md,
   },
   modalContent: {
     width: "90%",

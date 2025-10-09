@@ -31,14 +31,14 @@ const CriticalTaskItem = () => {
   const renderItem = useCallback(
     ({ item, index }: { item: StuckTask; index: number }) => {
       return (
-        <Animated.View
-          entering={FadeInDown.delay(index * 100)
-            .duration(500)
-            .springify()}
+        <TouchableOpacity
+          style={[styles.card, { backgroundColor: theme.colors.background }]}
+          activeOpacity={0.7}
         >
-          <TouchableOpacity
-            style={[styles.card, { backgroundColor: theme.colors.background }]}
-            activeOpacity={0.7}
+          <Animated.View
+            entering={FadeInDown.delay(index * 100)
+              .duration(500)
+              .springify()}
           >
             <View style={styles.taskContent}>
               <Text type="medium" size="sm" numberOfLines={2}>
@@ -127,8 +127,8 @@ const CriticalTaskItem = () => {
                 </View>
               </View>
             </View>
-          </TouchableOpacity>
-        </Animated.View>
+          </Animated.View>
+        </TouchableOpacity>
       );
     },
     [theme.colors]
@@ -150,16 +150,15 @@ const CriticalTaskItem = () => {
 
   return (
     <View style={styles.container}>
-      <Animated.View entering={FadeInUp.delay(600).duration(500).springify()}>
-        <View
-          style={[styles.header, { backgroundColor: theme.colors.surface }]}
-        >
-          <Ionicons name="alert-circle" size={24} color={theme.colors.error} />
-          <Gap horizontal={8} />
-          <Text type="bold" size="md">
-            Tugas Memerlukan Perhatian Khusus
-          </Text>
-        </View>
+      <Animated.View
+        entering={FadeInUp.delay(600).duration(500).springify()}
+        style={[styles.header, { backgroundColor: theme.colors.surface }]}
+      >
+        <Ionicons name="alert-circle" size={24} color={theme.colors.error} />
+        <Gap horizontal={8} />
+        <Text type="bold" size="md">
+          Tugas Memerlukan Perhatian Khusus
+        </Text>
       </Animated.View>
 
       <FlatList

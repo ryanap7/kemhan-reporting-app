@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "244734720497",
+    "project_id": "kemhan-reporting",
+    "storage_bucket": "kemhan-reporting.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:244734720497:android:b09bb70ab21248a1996c50",
+        "android_client_info": {
+          "package_name": "com.dit.kemhanreportingapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCI8z7vphaeEysCpRBb10uXOlJlIjTGsls"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

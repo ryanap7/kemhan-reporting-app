@@ -3,6 +3,7 @@ import { api } from "../config/axios.config";
 import {
   CreateTaskPayload,
   CreateTaskResponse,
+  DispositionTaskPayload,
   GetTaskByIdResponse,
   GetTasksResponse,
   UpdateProgressResponse,
@@ -19,9 +20,32 @@ export class TaskService {
     return response.data;
   }
 
+  static async dispositionTask(
+    taskId: string,
+    data: DispositionTaskPayload
+  ): Promise<CreateTaskResponse> {
+    const response = await api.post<CreateTaskResponse>(
+      API_ENDPOINTS.TASK.DISPOSITION(taskId),
+      data
+    );
+    return response.data;
+  }
+
   static async getTasks(): Promise<GetTasksResponse> {
     const response = await api.get<GetTasksResponse>(
       API_ENDPOINTS.TASK.GET_ALL
+    );
+    return response.data;
+  }
+
+  static async getDraftTasks(): Promise<GetTasksResponse> {
+    const response = await api.get<GetTasksResponse>(API_ENDPOINTS.TASK.DRAFT);
+    return response.data;
+  }
+
+  static async getTasksBySubdit(subditRole: string): Promise<GetTasksResponse> {
+    const response = await api.get<GetTasksResponse>(
+      API_ENDPOINTS.TASK.BY_SUBDIT(subditRole)
     );
     return response.data;
   }

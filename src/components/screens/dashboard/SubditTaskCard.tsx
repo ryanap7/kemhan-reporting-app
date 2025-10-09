@@ -6,7 +6,7 @@ import { GlobalStyles } from "@/src/theme/common";
 import { SHADOWS } from "@/src/theme/shadows";
 import { SPACING } from "@/src/theme/spacing";
 import { Ionicons } from "@expo/vector-icons";
-import { useFocusEffect } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import moment from "moment";
 import "moment/locale/id";
 import React, { useCallback } from "react";
@@ -35,14 +35,22 @@ const SubditTaskCard = () => {
   const renderItem = useCallback(
     ({ item, index }: { item: SubditStatistics; index: number }) => {
       return (
-        <Animated.View
-          entering={FadeInLeft.delay(index * 100)
-            .duration(500)
-            .springify()}
+        <TouchableOpacity
+          style={[styles.card, { backgroundColor: theme.colors.background }]}
+          activeOpacity={0.7}
+          onPress={() => {
+            router.push({
+              pathname: "/(leader)/task/by-subdit",
+              params: {
+                subditId: item.subdit,
+              },
+            });
+          }}
         >
-          <TouchableOpacity
-            style={[styles.card, { backgroundColor: theme.colors.background }]}
-            activeOpacity={0.7}
+          <Animated.View
+            entering={FadeInLeft.delay(index * 100)
+              .duration(500)
+              .springify()}
           >
             <View style={styles.cardHeader}>
               <Text type="bold" size="md">
@@ -121,8 +129,8 @@ const SubditTaskCard = () => {
                 {moment(item.lastUpdate).format("DD MMMM YYYY")}
               </Text>
             </View>
-          </TouchableOpacity>
-        </Animated.View>
+          </Animated.View>
+        </TouchableOpacity>
       );
     },
     [theme.colors]
@@ -130,17 +138,16 @@ const SubditTaskCard = () => {
 
   return (
     <View>
-      <Animated.View entering={FadeInUp.delay(600).duration(500).springify()}>
-        <View
-          style={[styles.header, { backgroundColor: theme.colors.surface }]}
-        >
-          <Text type="bold" size="md">
-            Status Subdirektorat
-          </Text>
-          <Text type="regular" size="xs" color={theme.colors.textSecondary}>
-            Monitoring real-time 4 subdirektorat
-          </Text>
-        </View>
+      <Animated.View
+        entering={FadeInUp.delay(600).duration(500).springify()}
+        style={[styles.header, { backgroundColor: theme.colors.surface }]}
+      >
+        <Text type="bold" size="md">
+          Status Subdirektorat
+        </Text>
+        <Text type="regular" size="xs" color={theme.colors.textSecondary}>
+          Monitoring real-time 4 subdirektorat
+        </Text>
       </Animated.View>
       <FlatList
         scrollEnabled={false}

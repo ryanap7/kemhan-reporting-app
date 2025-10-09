@@ -6,7 +6,6 @@ import { useTheme } from "@/src/contexts/ThemeContext";
 import { useTask } from "@/src/hooks/useTask";
 import { BORDER_RADIUS } from "@/src/theme/borderRadius";
 import { GlobalStyles } from "@/src/theme/common";
-import { SHADOWS } from "@/src/theme/shadows";
 import { SPACING } from "@/src/theme/spacing";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useCallback, useMemo, useState } from "react";
@@ -156,7 +155,6 @@ const CreateTaskScreen = () => {
                             ? option.color
                             : theme.colors.border,
                         },
-                        SHADOWS.sm,
                       ]}
                       onPress={() =>
                         setForm({ ...form, priority: option.value })
@@ -259,18 +257,17 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xs,
   },
   priorityContainer: {
-    flexDirection: "row",
+    ...GlobalStyles.row,
     gap: SPACING.sm,
   },
   priorityButton: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
     gap: SPACING.sm,
     paddingVertical: SPACING.md,
     paddingHorizontal: SPACING.sm,
     borderRadius: BORDER_RADIUS.lg,
     borderWidth: 1,
+    ...GlobalStyles.flex,
+    ...GlobalStyles.rowCenter,
   },
   priorityRadio: {
     width: 20,

@@ -44,7 +44,7 @@ const StatCard = () => {
       iconFamily: "ionicons" as const,
       title: "Selesai",
       value: statistics?.completedTasks.count,
-      subtitle: "75% completion",
+      subtitle: `${statistics?.completedTasks.percentage}% completion`,
       color: theme.colors.success,
     },
     {
@@ -52,7 +52,7 @@ const StatCard = () => {
       iconFamily: "ionicons" as const,
       title: "Dalam Progress",
       value: statistics?.inProgressTasks.count,
-      subtitle: "17% ongoing",
+      subtitle: `${statistics?.inProgressTasks.percentage}% ongoing`,
       color: theme.colors.warning,
     },
     {
@@ -60,7 +60,7 @@ const StatCard = () => {
       iconFamily: "ionicons" as const,
       title: "Perlu Perhatian",
       value: statistics?.stuckTasks.count,
-      subtitle: ">1 bulan stagnan",
+      subtitle: `>${statistics?.stuckTasks.thisMonth} bulan stagnan`,
       color: theme.colors.error,
     },
   ];
@@ -68,18 +68,12 @@ const StatCard = () => {
   const renderItem = useCallback(
     ({ item, index }: { item: StatItem; index: number }) => {
       return (
-        <Animated.View
-          entering={FadeInDown.delay(index * 100)
-            .duration(500)
-            .springify()}
-          style={styles.cardWrapper}
-        >
-          <View
-            style={[
-              styles.statCard,
-              { backgroundColor: theme.colors.surface },
-              SHADOWS.sm,
-            ]}
+        <View style={styles.cardWrapper}>
+          <Animated.View
+            entering={FadeInDown.delay(index * 100)
+              .duration(500)
+              .springify()}
+            style={[styles.statCard, { backgroundColor: theme.colors.surface }]}
           >
             <View
               style={[
@@ -112,8 +106,8 @@ const StatCard = () => {
             <Text type="regular" size="xs" color={theme.colors.textSecondary}>
               {item.subtitle}
             </Text>
-          </View>
-        </Animated.View>
+          </Animated.View>
+        </View>
       );
     },
     [theme.colors]
@@ -154,6 +148,7 @@ const styles = StyleSheet.create({
   statCard: {
     padding: SPACING.md,
     borderRadius: BORDER_RADIUS.xl,
+    ...SHADOWS.md,
   },
   iconContainer: {
     width: 48,

@@ -1,5 +1,6 @@
 import {
   CreateTaskPayload,
+  DispositionTaskPayload,
   Pagination,
   showMessageError,
   Task,
@@ -41,11 +42,72 @@ export function useTask() {
     }
   }, []);
 
+  const dispositionTask = useCallback(
+    async (taskId: string, payload: DispositionTaskPayload) => {
+      Keyboard.dismiss();
+      setIsLoading(true);
+
+      try {
+        const response = await TaskService.dispositionTask(taskId, payload);
+
+        const { message } = response;
+
+        if (response.success) {
+          Alert.alert("Berhasil", message, [
+            {
+              text: "OK",
+              onPress: () => router.back(),
+            },
+          ]);
+        }
+      } catch (error) {
+        showMessageError(error, "Gagal Disposisikan Tugas");
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
+
   const getTasks = useCallback(async () => {
     setIsLoading(true);
 
     try {
       const response = await TaskService.getTasks();
+
+      const { data, pagination } = response.data;
+
+      setTasks(data);
+      setPagination(pagination);
+    } catch (error) {
+      showMessageError(error, "Gagal Ambil Data Tugas");
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const getDraftTasks = useCallback(async () => {
+    setIsLoading(true);
+
+    try {
+      const response = await TaskService.getDraftTasks();
+
+      const { data, pagination } = response.data;
+
+      setTasks(data);
+      setPagination(pagination);
+    } catch (error) {
+      showMessageError(error, "Gagal Ambil Data Draft Tugas");
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const getTasksBySubdit = useCallback(async (subditRole: string) => {
+    setIsLoading(true);
+
+    try {
+      const response = await TaskService.getTasksBySubdit(subditRole);
 
       const { data, pagination } = response.data;
 
@@ -112,8 +174,11 @@ export function useTask() {
 
     // Operations
     getTasks,
+    getDraftTasks,
+    getTasksBySubdit,
     getTaskById,
     createTask,
+    dispositionTask,
     updateProgress,
   };
 }
