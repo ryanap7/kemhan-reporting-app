@@ -1,8 +1,7 @@
 export const API_CONFIG = {
-  // baseURL:
-  //   process.env.EXPO_PUBLIC_BASE_URL ||
-  //   "https://services-kemhan-reporting.digitalindotekno.com/api/v1",
-  baseURL: "https://johan-macrobiotic-tenthly.ngrok-free.dev/api/v1",
+  baseURL:
+    process.env.EXPO_PUBLIC_BASE_URL ||
+    "https://services-kemhan-reporting.digitalindotekno.com/api/v1",
   timeout: parseInt(process.env.EXPO_PUBLIC_API_TIMEOUT || "10000"),
   retryAttempts: 3,
   retryDelay: 1000,
