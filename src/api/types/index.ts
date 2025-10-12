@@ -14,5 +14,6 @@ export interface ApiResponse<T = any> {
 }
 
 export * from "./auth.types";
+export * from "./notification.types";
 export * from "./statistic.types";
 export * from "./task.types";

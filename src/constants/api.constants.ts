@@ -23,6 +23,11 @@ export const API_ENDPOINTS = {
     UPDATE_PROGRESS: (taskId: string, checklistId: string) =>
       `/tasks/${taskId}/checklist/${checklistId}`,
   },
+  NOTIFICATION: {
+    ALL: "/notifications",
+    UNREAD: "/notifications/unread-count",
+    READ: (notificationId: string) => `/notifications/${notificationId}/read`,
+  },
   MONITOR: {
     STATISTIC: "/monitoring/dashboard",
     STUCK: "/monitoring/stuck-tasks",

@@ -5,6 +5,7 @@ import {
   STATUS_CONFIG,
 } from "@/src/constants/data.constants";
 import { useTheme } from "@/src/contexts/ThemeContext";
+import { useNotification } from "@/src/hooks/useNotification";
 import { useTask } from "@/src/hooks/useTask";
 import { BORDER_RADIUS } from "@/src/theme/borderRadius";
 import { GlobalStyles } from "@/src/theme/common";
@@ -23,6 +24,13 @@ const StaffDashboard = () => {
   const { theme } = useTheme();
   const { top } = useSafeAreaInsets();
   const { tasks, getTasks } = useTask();
+  const { unread, getUnreadNotification } = useNotification();
+
+  useFocusEffect(
+    useCallback(() => {
+      getUnreadNotification();
+    }, [getUnreadNotification])
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -36,6 +44,10 @@ const StaffDashboard = () => {
 
   const handleTaskPress = (taskId: string) => {
     router.push(`/(staff)/task/${taskId}`);
+  };
+
+  const handleNotification = () => {
+    router.push("/(staff)/notifications");
   };
 
   const handleLogout = useCallback(() => {
@@ -210,20 +222,51 @@ const StaffDashboard = () => {
             {tasks.length} tugas aktif
           </Text>
         </View>
-        <TouchableOpacity
-          style={[
-            styles.logoutButton,
-            { backgroundColor: theme.colors.error + "15" },
-          ]}
-          onPress={handleLogout}
-          activeOpacity={0.7}
-        >
-          <Ionicons
-            name="log-out-outline"
-            size={20}
-            color={theme.colors.error}
-          />
-        </TouchableOpacity>
+
+        <View style={styles.headerActions}>
+          {/* Notification Button */}
+          <TouchableOpacity
+            style={[
+              styles.notificationButton,
+              { backgroundColor: theme.colors.primary + "15" },
+            ]}
+            onPress={handleNotification}
+            activeOpacity={0.7}
+          >
+            <Ionicons
+              name="notifications-outline"
+              size={22}
+              color={theme.colors.primary}
+            />
+            {unread > 0 && (
+              <View
+                style={[styles.badge, { backgroundColor: theme.colors.error }]}
+              >
+                <Text type="bold" size="xxs" color={theme.colors.textInverse}>
+                  {unread > 9 ? "9+" : unread}
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
+
+          <Gap horizontal={8} />
+
+          {/* Logout Button */}
+          <TouchableOpacity
+            style={[
+              styles.logoutButton,
+              { backgroundColor: theme.colors.error + "15" },
+            ]}
+            onPress={handleLogout}
+            activeOpacity={0.7}
+          >
+            <Ionicons
+              name="log-out-outline"
+              size={20}
+              color={theme.colors.error}
+            />
+          </TouchableOpacity>
+        </View>
       </Animated.View>
 
       <FlatList
@@ -246,11 +289,32 @@ const styles = StyleSheet.create({
     padding: SPACING.lg,
     ...GlobalStyles.rowBetween,
   },
+  headerActions: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  notificationButton: {
+    width: 48,
+    height: 48,
+    borderRadius: BORDER_RADIUS.full,
+    ...GlobalStyles.center,
+    position: "relative",
+  },
   logoutButton: {
     width: 48,
     height: 48,
     borderRadius: BORDER_RADIUS.full,
     ...GlobalStyles.center,
+  },
+  badge: {
+    position: "absolute",
+    top: 4,
+    right: 8,
+    minWidth: 18,
+    height: 18,
+    borderRadius: BORDER_RADIUS.full,
+    ...GlobalStyles.center,
+    paddingHorizontal: 4,
   },
   content: {
     margin: SPACING.md,

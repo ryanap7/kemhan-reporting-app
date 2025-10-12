@@ -6,12 +6,13 @@ import SubditTaskCard from "@/src/components/screens/dashboard/SubditTaskCard";
 import Text from "@/src/components/ui/Text";
 import { useTheme } from "@/src/contexts/ThemeContext";
 import { useAuth } from "@/src/hooks/useAuth";
+import { useNotification } from "@/src/hooks/useNotification";
 import { BORDER_RADIUS } from "@/src/theme/borderRadius";
 import { GlobalStyles } from "@/src/theme/common";
 import { SHADOWS } from "@/src/theme/shadows";
 import { SPACING } from "@/src/theme/spacing";
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import React, { useCallback } from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
@@ -21,6 +22,13 @@ const LeaderDashboard = () => {
   const { theme } = useTheme();
   const { top, bottom } = useSafeAreaInsets();
   const { logout } = useAuth();
+  const { unread, getUnreadNotification } = useNotification();
+
+  useFocusEffect(
+    useCallback(() => {
+      getUnreadNotification();
+    }, [getUnreadNotification])
+  );
 
   const handleLogout = useCallback(async () => {
     await logout();
@@ -28,6 +36,10 @@ const LeaderDashboard = () => {
 
   const handleCreateTask = () => {
     router.push("/(leader)/task/create");
+  };
+
+  const handleNotification = () => {
+    router.push("/(leader)/notifications");
   };
 
   return (
@@ -50,20 +62,51 @@ const LeaderDashboard = () => {
             Monitoring Tugas Subdirektorat
           </Text>
         </View>
-        <TouchableOpacity
-          style={[
-            styles.logoutButton,
-            { backgroundColor: theme.colors.error + "15" },
-          ]}
-          onPress={handleLogout}
-          activeOpacity={0.7}
-        >
-          <Ionicons
-            name="log-out-outline"
-            size={20}
-            color={theme.colors.error}
-          />
-        </TouchableOpacity>
+
+        <View style={styles.headerActions}>
+          {/* Notification Button */}
+          <TouchableOpacity
+            style={[
+              styles.notificationButton,
+              { backgroundColor: theme.colors.primary + "15" },
+            ]}
+            onPress={handleNotification}
+            activeOpacity={0.7}
+          >
+            <Ionicons
+              name="notifications-outline"
+              size={22}
+              color={theme.colors.primary}
+            />
+            {unread > 0 && (
+              <View
+                style={[styles.badge, { backgroundColor: theme.colors.error }]}
+              >
+                <Text type="bold" size="xxs" color={theme.colors.textInverse}>
+                  {unread > 9 ? "9+" : unread}
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
+
+          <Gap horizontal={8} />
+
+          {/* Logout Button */}
+          <TouchableOpacity
+            style={[
+              styles.logoutButton,
+              { backgroundColor: theme.colors.error + "15" },
+            ]}
+            onPress={handleLogout}
+            activeOpacity={0.7}
+          >
+            <Ionicons
+              name="log-out-outline"
+              size={20}
+              color={theme.colors.error}
+            />
+          </TouchableOpacity>
+        </View>
       </Animated.View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -103,11 +146,32 @@ const styles = StyleSheet.create({
     padding: SPACING.lg,
     ...GlobalStyles.rowBetween,
   },
+  headerActions: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  notificationButton: {
+    width: 48,
+    height: 48,
+    borderRadius: BORDER_RADIUS.full,
+    ...GlobalStyles.center,
+    position: "relative",
+  },
   logoutButton: {
     width: 48,
     height: 48,
     borderRadius: BORDER_RADIUS.full,
     ...GlobalStyles.center,
+  },
+  badge: {
+    position: "absolute",
+    top: 4,
+    right: 8,
+    minWidth: 18,
+    height: 18,
+    borderRadius: BORDER_RADIUS.full,
+    ...GlobalStyles.center,
+    paddingHorizontal: 4,
   },
   fab: {
     position: "absolute",
