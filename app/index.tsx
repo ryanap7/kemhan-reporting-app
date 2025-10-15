@@ -61,10 +61,14 @@ const SplashScreen = () => {
           case Role.PIMPINAN:
             router.replace("/(leader)/dashboard");
             break;
-          case Role.SUBDIT_HANMIL:
-          case Role.SUBDIT_HANNIRMIL:
-          case Role.SUBDIT_MPP:
-          case Role.SUBDIT_ANSTRA:
+          case Role.DITJAKSTRA:
+          case Role.DITRAH:
+          case Role.DITKERSIN:
+          case Role.DITWILHAN:
+          case Role.BAGUM:
+          case Role.BAGPROGLAP:
+          case Role.BAGDATIN:
+
           default:
             router.replace("/(staff)/dashboard");
             break;

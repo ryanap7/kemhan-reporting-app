@@ -59,7 +59,7 @@ const LeaderDashboard = () => {
           </Text>
           <Gap vertical={4} />
           <Text type="regular" size="sm" color={theme.colors.textSecondary}>
-            Monitoring Tugas Subdirektorat
+            Monitoring Tugas Direktorat
           </Text>
         </View>
 

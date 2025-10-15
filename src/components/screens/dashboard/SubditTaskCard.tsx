@@ -143,10 +143,10 @@ const SubditTaskCard = () => {
         style={[styles.header, { backgroundColor: theme.colors.surface }]}
       >
         <Text type="bold" size="md">
-          Status Subdirektorat
+          Status Direktorat
         </Text>
         <Text type="regular" size="xs" color={theme.colors.textSecondary}>
-          Monitoring real-time 4 subdirektorat
+          Monitoring real-time {DATA?.length} direktorat
         </Text>
       </Animated.View>
       <FlatList

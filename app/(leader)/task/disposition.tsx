@@ -92,10 +92,13 @@ const AssignDispositionTaskScreen = () => {
               <Select
                 value={form.assignee.value}
                 options={[
-                  { label: "Subdit Hanmil", value: "SUBDIT_HANMIL" },
-                  { label: "Subdit Hannirmil", value: "SUBDIT_HANNIRMIL" },
-                  { label: "Subdit MPP", value: "SUBDIT_MPP" },
-                  { label: "Subdit Anstra", value: "SUBDIT_ANSTRA" },
+                  { label: "Direktorat Jakstra", value: "DITJAKSTRA" },
+                  { label: "Direktorat Trah", value: "DITRAH" },
+                  { label: "Direktorat Kersin", value: "DITKERSIN" },
+                  { label: "Direktorat Wilhan", value: "DITWILHAN" },
+                  { label: "Direktorat Bagum", value: "BAGUM" },
+                  { label: "Direktorat Bagproglap", value: "BAGPROGLAP" },
+                  { label: "Direktorat Bagdatin", value: "BAGDATIN" },
                 ]}
                 onChange={(value: { label: string; value: string }) => {
                   setForm({ ...form, assignee: value });
