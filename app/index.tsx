@@ -125,12 +125,8 @@ const SplashScreen = () => {
 
       {/* Animated Text */}
       <Animated.View style={[GlobalStyles.center, textAnimatedStyle]}>
-        <Text type="bold" size="xl">
-          Direktorat Pengerahan
-        </Text>
-        <Gap vertical={8} />
-        <Text type="regular" size="sm" color={theme.colors.textSecondary}>
-          Kementerian Pertahanan RI
+        <Text type="bold" size="xl" style={GlobalStyles.center}>
+          Direktorat Jenderal Strategi Pertahanan
         </Text>
       </Animated.View>
     </View>

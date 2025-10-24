@@ -71,14 +71,8 @@ export default function LoginScreen() {
 
           <Gap vertical={SPACING.md} />
 
-          <Text type="bold" size="xl">
-            Direktorat Pengerahan
-          </Text>
-
-          <Gap vertical={SPACING.xs} />
-
-          <Text type="regular" size="sm" color={theme.colors.textSecondary}>
-            Kementerian Pertahanan RI
+          <Text type="bold" size="lg" style={GlobalStyles.center}>
+            Direktorat Jenderal Strategi Pertahanan
           </Text>
         </View>
 
