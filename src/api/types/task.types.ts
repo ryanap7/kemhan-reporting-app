@@ -44,11 +44,25 @@ export interface Task {
   id: string;
   title: string;
   description: string;
-  status: "DRAFT" | "IN_PROGRESS" | "COMPLETED";
+  status:
+    | "DRAFT"
+    | "DISPOSITIONED"
+    | "IN_PROGRESS"
+    | "STUCK"
+    | "COMPLETED"
+    | "CANCELLED";
   priority: number;
-  subditRole: string;
   creatorId: string;
-  creator: TaskCreator;
+  creator: TaskUser;
+  assignedToId?: string | null;
+  assignedTo?: TaskUser | null;
+  assignedToRole?: string | null;
+  ccUsers?: TaskUser[];
+  dispositionNote?: string | null;
+  dispositionedAt?: string | null;
+  dispositionedBy?: string | null;
+  dispositioner?: TaskUser | null;
+  subditRole?: string | null;
   startDate: string | null;
   dueDate: string | null;
   completedAt: string | null;
@@ -56,6 +70,14 @@ export interface Task {
   updatedAt: string;
   checklistItems: ChecklistItem[];
   progress: TaskProgress;
+}
+
+export interface TaskUser {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  addedAt?: string;
 }
 
 export interface Pagination {

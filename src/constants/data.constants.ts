@@ -23,6 +23,12 @@ export const STATUS_CONFIG = {
     icon: "alert-circle" as const,
     bgColor: "#FEF2F2",
   },
+  CANCELLED: {
+    label: "Terhambat",
+    color: "#EF4444",
+    icon: "alert-circle" as const,
+    bgColor: "#FEF2F2",
+  },
   NOT_STARTED: {
     label: "Belum Dimulai",
     color: "#6B7280",

@@ -73,12 +73,15 @@ const Select: FC<SelectProps> = ({
   );
 
   // Optimize keyExtractor
-  const keyExtractor = useCallback((item: Option) => item.value, []);
+  const keyExtractor = useCallback((item: Option) => item.label, []);
 
   // Optimize item renderer with useCallback
   const renderItem = useCallback(
     ({ item }: { item: Option }) => {
       const isSelected = item.value === value;
+
+      console.log(item.value);
+      console.log(value);
 
       return (
         <Pressable

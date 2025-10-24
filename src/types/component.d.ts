@@ -53,7 +53,7 @@ export interface ErrorMessageProps {
 
 export type SelectProps = {
   label?: string;
-  value?: string;
+  value?: any;
   options: Option[];
   error?: string;
   type?: "full" | "content";

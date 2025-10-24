@@ -7,6 +7,7 @@ import {
 } from "@/src/constants/data.constants";
 import { useTheme } from "@/src/contexts/ThemeContext";
 import { useTask } from "@/src/hooks/useTask";
+import { useAuthStore } from "@/src/stores";
 import { BORDER_RADIUS } from "@/src/theme/borderRadius";
 import { GlobalStyles } from "@/src/theme/common";
 import { SHADOWS } from "@/src/theme/shadows";
@@ -37,6 +38,7 @@ const DetailTaskScreen = () => {
   const { theme } = useTheme();
   const { top } = useSafeAreaInsets();
 
+  const { user } = useAuthStore();
   const { task, getTaskById, updateProgress, isLoading } = useTask();
 
   useFocusEffect(
@@ -112,7 +114,7 @@ const DetailTaskScreen = () => {
     );
   }
 
-  const statusConfig = STATUS_CONFIG[task?.status];
+  const statusConfig = STATUS_CONFIG[task.status];
   const priorityConfig = getPriorityConfig(task?.priority);
 
   // Find the first non-completed task (can start)
@@ -121,6 +123,8 @@ const DetailTaskScreen = () => {
   };
 
   const nextActionableTask = getNextActionableTask();
+
+  const isAssignedTo = task.assignedTo?.id === user?.id;
 
   return (
     <View
@@ -412,48 +416,102 @@ const DetailTaskScreen = () => {
                 )}
 
                 {/* Action Buttons */}
-                {!isCompleted && (canStart || canContinue || isInProgress) && (
-                  <>
-                    <Gap vertical={12} />
-                    <View style={styles.actionButtons}>
-                      {canStart && (
-                        <TouchableOpacity
-                          style={[
-                            styles.actionButton,
-                            { backgroundColor: theme.colors.primary },
-                          ]}
-                          onPress={() => handleChecklistAction(item, "start")}
-                          activeOpacity={0.7}
-                        >
-                          <Ionicons
-                            name="play"
-                            size={16}
-                            color={theme.colors.textInverse}
-                          />
-                          <Text
-                            type="bold"
-                            size="sm"
-                            color={theme.colors.textInverse}
+                {!isCompleted &&
+                  isAssignedTo &&
+                  (canStart || canContinue || isInProgress) && (
+                    <>
+                      <Gap vertical={12} />
+                      <View style={styles.actionButtons}>
+                        {canStart && (
+                          <TouchableOpacity
+                            activeOpacity={0.7}
+                            style={[
+                              styles.actionButton,
+                              { backgroundColor: theme.colors.primary },
+                            ]}
+                            onPress={() => handleChecklistAction(item, "start")}
                           >
-                            Mulai Tahapan
-                          </Text>
-                        </TouchableOpacity>
-                      )}
+                            <Ionicons
+                              name="play"
+                              size={16}
+                              color={theme.colors.textInverse}
+                            />
+                            <Text
+                              type="bold"
+                              size="sm"
+                              color={theme.colors.textInverse}
+                            >
+                              Mulai Tahapan
+                            </Text>
+                          </TouchableOpacity>
+                        )}
 
-                      {isInProgress && (
-                        <>
+                        {isInProgress && (
+                          <>
+                            <TouchableOpacity
+                              style={[
+                                styles.actionButton,
+                                { backgroundColor: theme.colors.success },
+                              ]}
+                              onPress={() =>
+                                handleChecklistAction(item, "complete")
+                              }
+                              activeOpacity={0.7}
+                            >
+                              <Ionicons
+                                name="checkmark"
+                                size={16}
+                                color={theme.colors.textInverse}
+                              />
+                              <Text
+                                type="bold"
+                                size="sm"
+                                color={theme.colors.textInverse}
+                              >
+                                Selesaikan
+                              </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              style={[
+                                styles.actionButtonOutline,
+                                {
+                                  backgroundColor: theme.colors.surface,
+                                  borderColor: theme.colors.error,
+                                },
+                              ]}
+                              onPress={() =>
+                                handleChecklistAction(item, "block")
+                              }
+                              activeOpacity={0.7}
+                            >
+                              <Ionicons
+                                name="alert-circle-outline"
+                                size={16}
+                                color={theme.colors.error}
+                              />
+                              <Text
+                                type="bold"
+                                size="sm"
+                                color={theme.colors.error}
+                              >
+                                Hambatan
+                              </Text>
+                            </TouchableOpacity>
+                          </>
+                        )}
+
+                        {canContinue && (
                           <TouchableOpacity
                             style={[
                               styles.actionButton,
-                              { backgroundColor: theme.colors.success },
+                              { backgroundColor: theme.colors.primary },
+                              SHADOWS.sm,
                             ]}
-                            onPress={() =>
-                              handleChecklistAction(item, "complete")
-                            }
+                            onPress={() => handleChecklistAction(item, "start")}
                             activeOpacity={0.7}
                           >
                             <Ionicons
-                              name="checkmark"
+                              name="play"
                               size={16}
                               color={theme.colors.textInverse}
                             />
@@ -462,63 +520,13 @@ const DetailTaskScreen = () => {
                               size="sm"
                               color={theme.colors.textInverse}
                             >
-                              Selesaikan
+                              Lanjutkan
                             </Text>
                           </TouchableOpacity>
-                          <TouchableOpacity
-                            style={[
-                              styles.actionButtonOutline,
-                              {
-                                backgroundColor: theme.colors.surface,
-                                borderColor: theme.colors.error,
-                              },
-                            ]}
-                            onPress={() => handleChecklistAction(item, "block")}
-                            activeOpacity={0.7}
-                          >
-                            <Ionicons
-                              name="alert-circle-outline"
-                              size={16}
-                              color={theme.colors.error}
-                            />
-                            <Text
-                              type="bold"
-                              size="sm"
-                              color={theme.colors.error}
-                            >
-                              Hambatan
-                            </Text>
-                          </TouchableOpacity>
-                        </>
-                      )}
-
-                      {canContinue && (
-                        <TouchableOpacity
-                          style={[
-                            styles.actionButton,
-                            { backgroundColor: theme.colors.primary },
-                            SHADOWS.sm,
-                          ]}
-                          onPress={() => handleChecklistAction(item, "start")}
-                          activeOpacity={0.7}
-                        >
-                          <Ionicons
-                            name="play"
-                            size={16}
-                            color={theme.colors.textInverse}
-                          />
-                          <Text
-                            type="bold"
-                            size="sm"
-                            color={theme.colors.textInverse}
-                          >
-                            Lanjutkan
-                          </Text>
-                        </TouchableOpacity>
-                      )}
-                    </View>
-                  </>
-                )}
+                        )}
+                      </View>
+                    </>
+                  )}
               </Animated.View>
 
               {/* Connector */}
@@ -742,7 +750,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.md,
     borderRadius: BORDER_RADIUS.md,
     ...GlobalStyles.rowCenter,
-    ...SHADOWS.sm,
   },
   actionButtonOutline: {
     flex: 1,
@@ -752,7 +759,6 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.md,
     borderWidth: 1,
     ...GlobalStyles.rowCenter,
-    ...SHADOWS.sm,
   },
   connector: {
     ...GlobalStyles.center,

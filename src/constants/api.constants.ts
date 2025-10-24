@@ -13,6 +13,9 @@ export const API_ENDPOINTS = {
     REFRESH_TOKEN: "/auth/refresh-token",
     SET_TOKEN: "/users/fcm-token",
   },
+  USER: {
+    GET_ALL: "/users",
+  },
   TASK: {
     GET_ALL: "/tasks",
     DRAFT: "/tasks/draft/list",

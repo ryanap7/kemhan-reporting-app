@@ -1,4 +1,4 @@
-import { ApiResponse } from ".";
+import { ApiResponse, User } from ".";
 
 export interface AuthTokens {
   accessToken: string;
@@ -15,15 +15,6 @@ export enum Role {
   BAGUM = "BAGUM",
   BAGPROGLAP = "BAGPROGLAP",
   BAGDATIN = "BAGDATIN",
-}
-
-
-export interface User {
-  id: string;
-  username: string;
-  email: string;
-  name: string;
-  role: string;
 }
 
 export interface LoginData {
